@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "34418401737",
+    "project_id": "verdant-legacy-348903",
+    "storage_bucket": "verdant-legacy-348903.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34418401737:android:beb536da6b82dc7c520818",
+        "android_client_info": {
+          "package_name": "com.developerdepository.wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34418401737-86cah4ragffqd5bi0sucftbl3s7d8nls.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyGkfSm7ipV9uXRtlZbUfbjp53pfQNYSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34418401737-86cah4ragffqd5bi0sucftbl3s7d8nls.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
