@@ -1,3 +1,5 @@
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable global-require */
 /* eslint-disable import/no-extraneous-dependencies */
 import { ImageModel } from 'core/modules/image/image.model';
 import path from 'path';

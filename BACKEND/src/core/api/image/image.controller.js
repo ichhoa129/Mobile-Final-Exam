@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import { ImageService } from '../../modules/image/image.service';
 import { CreateUserDto, UpdateUserDto } from '../../modules/user/dto';
 import { ValidHttpResponse } from '../../../packages/handler/response/validHttp.response';
