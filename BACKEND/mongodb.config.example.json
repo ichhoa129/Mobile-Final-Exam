@@ -1,0 +1,5 @@
+{
+    "connectionString": "mongodb+srv://admin:password@db/?retryWrites=true&w=majority",
+    "migrationPath": "/src/core/database/migrations/**.js",
+    "seedingPath": "/src/core/database/seeds/**.js"
+}

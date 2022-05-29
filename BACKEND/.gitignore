@@ -52,3 +52,5 @@ jspm_packages/
 .fusebox/
 
 .idea/
+
+mongodb.config.json
