@@ -3,8 +3,14 @@ package com.developerdepository.wallpaper.Common
 import com.developerdepository.wallpaper.Common.Data
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface APIService {
-    @get:GET("/photos/?client_id=_fChyTeXq-vOk5v-t7GRy4Alf8lfYpXzTLPdXPeYyAo&page=1")
-    val wallpapers: Call<List<WallpapersModel>>
+    @GET("/api/images")
+//    val wallpapers: Call<WallpapersList>
+    fun getWallpapers(
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Call<WallpapersList>
 }

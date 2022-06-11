@@ -21,7 +21,7 @@ public class WallpapersListAdapter(
     class WallpapersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(wallpapers: WallpapersModel, clickListener: (WallpapersModel) -> Unit) {
             //Load Image
-            Glide.with(itemView.context).load(wallpapers.data.thumb).centerCrop().listener(
+            Glide.with(itemView.context).load(wallpapers.data.small).centerCrop().listener(
                 object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,

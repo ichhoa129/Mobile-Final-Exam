@@ -9,7 +9,7 @@ object API {
         get() {
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
-                    .baseUrl("https://api.unsplash.com")
+                    .baseUrl("https://mobile.howtoquamon.tk")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
             }

@@ -13,6 +13,7 @@ import com.developerdepository.wallpaper.Common.WallpapersModel
 class WallpapersViewModel : ViewModel() {
 
     private val firebaseRepository: FirebaseRepository = FirebaseRepository()
+    private var page = 1
 
     private val wallpapersList: MutableLiveData<List<WallpapersModel>> by lazy {
         MutableLiveData<List<WallpapersModel>>().also {
@@ -25,42 +26,51 @@ class WallpapersViewModel : ViewModel() {
     }
 
     fun loadWallpapersData() {
-//        firebaseRepository.queryWallpapers().addOnCompleteListener {
-//            if (it.isSuccessful) {
-//                val result = it.result
-//                if (result!!.isEmpty) {
-//                    //No more results
-//                } else {
-//                    //Results ready to be loaded
-//                    if (wallpapersList.value == null) {
-//                        wallpapersList.value = result.toObjects(WallpapersModel::class.java)
-//                    } else {
-//                        wallpapersList.value =
-//                            wallpapersList.value!!.plus(result.toObjects(WallpapersModel::class.java))
-//                    }
-//
-//                    val lastItem: DocumentSnapshot = result.documents[result.size() - 1]
-//                    firebaseRepository.lastVisible = lastItem
+        Log.d("DEBUG4", "CALL API")
+//        API.apiService.wallpapers.enqueue(object: Callback<WallpapersList> {
+//            override fun onResponse(call: Call<WallpapersList>?, response: Response<WallpapersList>?) {
+//                if(response==null|| response.body()!!.wallpapersList ==null){
+//                    Log.d("DEBUG3", "CANT ACCESS API")
+//                    return
 //                }
-//            } else {
-//                Log.d("VIEW_MODEL_LOG", "Error : ${it.exception!!.message}")
+//
+//                if(wallpapersList.value == null) {
+//                    wallpapersList.value = response.body()!!.wallpapersList
+//                    wallpapersList.value!!.forEach {
+//                        Log.d("DEBUG1", it._id.toString())
+//                    }
+//                }
+//
 //            }
-//        }
-
-        API.apiService.wallpapers.enqueue(object: Callback<List<WallpapersModel>> {
-            override fun onResponse(call: Call<List<WallpapersModel>>?, response: Response<List<WallpapersModel>>?) {
-                if(response==null|| response.body()==null){
+//
+//            override fun onFailure(call: Call<WallpapersList>?, t: Throwable?) {
+//                Log.d("DEBUG3", t.toString())
+//            }
+//        })
+        API.apiService.getWallpapers(page++, 6).enqueue(object: Callback<WallpapersList> {
+            override fun onResponse(call: Call<WallpapersList>?, response: Response<WallpapersList>?) {
+                if(response==null|| response.body()!!.wallpapersList ==null){
+                    Log.d("DEBUG3", "CANT ACCESS API")
                     return
                 }
-//                wallpapersList.value = response.body()!!
-                wallpapersList.value = response.body()!!
-                wallpapersList.value!!.forEach {
-                    Log.d("DEBUG1", it.id.toString())
+
+                if(wallpapersList.value == null) {
+                    wallpapersList.value = response.body()!!.wallpapersList
+                    wallpapersList.value!!.forEach {
+                        Log.d("DEBUG1", it._id.toString())
+                    }
                 }
+                else {
+                    response.body()!!.wallpapersList.forEach {
+                        Log.d("DEBUG1", it._id.toString())
+                        wallpapersList.value = wallpapersList.value!!.plus(it)
+                    }
+                }
+
             }
 
-            override fun onFailure(call: Call<List<WallpapersModel>>?, t: Throwable?) {
-
+            override fun onFailure(call: Call<WallpapersList>?, t: Throwable?) {
+                Log.d("DEBUG3", t.toString())
             }
         })
     }
