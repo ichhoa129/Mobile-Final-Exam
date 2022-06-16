@@ -28,7 +28,7 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
 
     private var isLoading: Boolean = true
 
-    private val wallpapersViewModel: WallpapersViewModel by viewModels()
+    private val wallpapersViewModel : WallpapersViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +42,8 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
+
+        wallpapersViewModel.application = requireActivity().application
 
 //        if (firebaseRepository.getUser() == null) {
 //            navController!!.navigate(R.id.action_wallpapersListFragment_to_registerFragment)
@@ -82,12 +84,10 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
         super.onActivityCreated(savedInstanceState)
 
         wallpapersViewModel.getWallpapersList().observe(viewLifecycleOwner, Observer { it ->
+//            Log.d("DEBUG5", "ADD MORE")
             wallpapersList = it
             wallpapersListAdapter.wallpapersList = wallpapersList
             wallpapersListAdapter.notifyDataSetChanged()
-            it!!.forEach {
-                Log.d("DEBUG2", it.id.toString())
-            }
 
             //Loading complete
             isLoading = false
@@ -98,7 +98,7 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
         //Clicked on wallpaper item in the list
         val action =
             WallpapersListFragmentDirections.actionWallpapersListFragmentToWallpaperViewFragment(
-                wallpaper.data.thumb
+                wallpaper.data.large
             )
         navController!!.navigate(action)
     }
