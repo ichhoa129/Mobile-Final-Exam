@@ -26,7 +26,7 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
 
     private var isLoading: Boolean = true
 
-    private val wallpapersViewModel: WallpapersViewModel by viewModels()
+    private val wallpapersViewModel : WallpapersViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +40,8 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
+
+        wallpapersViewModel.application = requireActivity().application
 
 //        if (firebaseRepository.getUser() == null) {
 //            navController!!.navigate(R.id.action_wallpapersListFragment_to_registerFragment)
