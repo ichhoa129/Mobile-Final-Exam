@@ -118,5 +118,8 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ae466978d4787083b5b32a7ca18b879eb13a6e2d
 }
