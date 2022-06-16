@@ -1,5 +1,6 @@
 package com.developerdepository.wallpaper
 
+import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.developerdepository.wallpaper.Common.*
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_wallpapers_list.*
 
 class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
@@ -46,6 +48,11 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
 //        if (firebaseRepository.getUser() == null) {
 //            navController!!.navigate(R.id.action_wallpapersListFragment_to_registerFragment)
 //        }
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.getIdToken(true)?.addOnSuccessListener { result ->
+            val idToken = result?.token
+            Log.d(ContentValues.TAG, "GetTokenResult result = $idToken")
+        }
 
         list_title!!.setText(Common.wallpaperListTitle)
 
