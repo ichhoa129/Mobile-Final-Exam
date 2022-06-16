@@ -18,6 +18,7 @@
            android:id="@+id/edit_email"
            android:layout_marginTop="20dp"
            android:layout_width="match_parent"
+           android:hint="Enter Email"
            android:layout_height="wrap_content">
 
        </EditText>
@@ -26,11 +27,13 @@
            android:id="@+id/edit_pass"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
+           android:hint="Enter password"
            ></EditText>
        <Button
            android:id="@+id/btn_login"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
+
            android:text="Login">
 
        </Button>

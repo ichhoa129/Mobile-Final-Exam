@@ -3,6 +3,7 @@ package com.developerdepository.wallpaper
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,14 +31,10 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
+        edit_pass.transformationMethod = PasswordTransformationMethod.getInstance()
 
         btn_login.setOnClickListener { view: View? ->
             login()
-//            val user = FirebaseAuth.getInstance().currentUser
-//            user?.getIdToken(true)?.addOnSuccessListener { result ->
-//                val idToken = result?.token
-//                Log.d(TAG, "GetTokenResult result = $idToken")
-//            }
         }
     }
     override fun onStart() {
