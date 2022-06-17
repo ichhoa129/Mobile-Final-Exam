@@ -7,14 +7,16 @@ class Repository extends DataRepository {
         super(UserModel);
     }
 
+    findAll() {
+        return this.model.find({}).lean();
+    }
+
     findByEmail(email) {
         return this.model.findOne({ email }).lean();
     }
 
     findDetailById(id) {
-        return this.model.findById(id,
-            ['_id', 'email', 'username'],
-            { timestamps: true });
+        return this.model.findById(id, ['_id', 'email', 'username'], { timestamps: true });
     }
 }
 
