@@ -1,22 +1,21 @@
 package com.developerdepository.wallpaper
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
 import android.app.WallpaperManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
+import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,15 +26,18 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_wallpaper_view.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class WallpaperViewFragment : Fragment() {
 
-    private var image: String? = null
+    private lateinit var image: ByteArray
     private var msg: String? = ""
     private var lastMsg = ""
 
@@ -50,7 +52,8 @@ class WallpaperViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        image = WallpaperViewFragmentArgs.fromBundle(requireArguments()).wallpaperImage
+        image = Base64.decode(WallpaperViewFragmentArgs.fromBundle(requireArguments()).wallpaperImage, Base64.DEFAULT)
+        Log.d("DEBUG6", image.toString())
 
         val builder: StrictMode.VmPolicy.Builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
@@ -64,12 +67,12 @@ class WallpaperViewFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 askPermissions()
             } else {
-                downloadImage(image.toString())
+//                createFile(image)
             }
         }
-        share_wallpaper_btn.setOnClickListener {
-            shareImageFromURI(image)
-        }
+//        share_wallpaper_btn.setOnClickListener {
+//            shareImageFromURI(image)
+//        }
     }
 
 
@@ -114,7 +117,7 @@ class WallpaperViewFragment : Fragment() {
 
             }
         } else {
-            downloadImage(image.toString())
+//            createFile(image)
         }
     }
 
@@ -129,7 +132,7 @@ class WallpaperViewFragment : Fragment() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay!
                     // Download the Image
-                    downloadImage(image.toString())
+//                    createFile(image)
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -149,52 +152,79 @@ class WallpaperViewFragment : Fragment() {
         }
     }
 
-    @SuppressLint("Range")
-    fun downloadImage(url: String) {
-        val directory = File(Environment.DIRECTORY_PICTURES)
-
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-
-        val downloadManager =
-            requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
-        val downloadUri = Uri.parse(url)
-
-        val request = DownloadManager.Request(downloadUri).apply {
-            setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                .setAllowedOverRoaming(false)
-                .setTitle(url.substring(url.lastIndexOf("/") + 1))
-                .setDescription("")
-                .setDestinationInExternalPublicDir(
-                    directory.toString(),
-                    url.substring(url.lastIndexOf("/") + 1)
-                )
-        }
-
-        val downloadId = downloadManager.enqueue(request)
-        val query = DownloadManager.Query().setFilterById(downloadId)
-        Thread(Runnable {
-            var downloading = true
-            while (downloading) {
-                val cursor: Cursor = downloadManager.query(query)
-                cursor.moveToFirst()
-                if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
-                    downloading = false
-                }
-                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                msg = statusMessage(url, directory, status)
-                if (msg != lastMsg) {
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
-                    }
-                    lastMsg = msg ?: ""
-                }
-                cursor.close()
+    private fun createFile(image: ByteArray) {
+        try {
+            val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            if(!path.exists()) {
+                path.mkdir()
             }
-        }).start()
+            //Create file..
+            val sdf = SimpleDateFormat("dd-MM-yyyy_hh.mm.ss")
+            val currentDate = sdf.format(Date())
+            var fileName = System.currentTimeMillis().toString() + ".jpg";
+            Log.d("DEBUG 8: ", fileName)
+            val file = File(path, fileName)
+
+            val out = FileOutputStream(file)
+            out.write(image)
+            out.close();
+
+            requireActivity().runOnUiThread {
+                Toast.makeText(activity, "Download successfull in " + path.toString() + fileName, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
+
+//    @SuppressLint("Range")
+//    fun downloadImage(image: ByteArray) {
+//        val directory = File(Environment.DIRECTORY_PICTURES)
+//
+//        if (!directory.exists()) {
+//            directory.mkdirs()
+//        }
+//
+//        val downloadManager =
+//            requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+//
+//        val downloadUri = Uri.parse(url)
+//
+//        val request = DownloadManager.Request(downloadUri).apply {
+//            setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+//                .setAllowedOverRoaming(false)
+//                .setTitle(url.substring(url.lastIndexOf("/") + 1))
+//                .setDescription("")
+//                .setDestinationInExternalPublicDir(
+//                    directory.toString(),
+//                    url.substring(url.lastIndexOf("/") + 1)
+//                )
+//        }
+//
+//        val downloadId = downloadManager.enqueue(request)
+//        val query = DownloadManager.Query().setFilterById(downloadId)
+//        Thread(Runnable {
+//            var downloading = true
+//            while (downloading) {
+//                val cursor: Cursor = downloadManager.query(query)
+//                cursor.moveToFirst()
+//                if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+//                    downloading = false
+//                }
+//                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+//                msg = statusMessage(url, directory, status)
+//                if (msg != lastMsg) {
+//                    requireActivity().runOnUiThread {
+//                        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
+//                    }
+//                    lastMsg = msg ?: ""
+//                }
+//                cursor.close()
+//            }
+//        }).start()
+//    }
 
     private fun statusMessage(url: String, directory: File, status: Int): String? {
         var msg = ""
@@ -211,24 +241,6 @@ class WallpaperViewFragment : Fragment() {
         return msg
     }
 
-
-    //Share Wallpaper
-    fun shareImageFromURI(url: String?) {
-        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_STREAM, getBitmapFromView(bitmap))
-                startActivity(Intent.createChooser(intent, "Share Image"))
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Toast.makeText(activity, "Preparing to share..", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {}
-        })
-    }
 
     fun getBitmapFromView(bmp: Bitmap?): Uri? {
         var bmpUri: Uri? = null
@@ -257,7 +269,7 @@ class WallpaperViewFragment : Fragment() {
                 null
             )
         )
-        set_wallpaper_text.text = "Wallpaper Set"
+        set_wallpaper_text.text = "Wallpaper Setted"
         set_wallpaper_text.setTextColor(resources.getColor(R.color.setWallpaperBtnText2, null))
 
         val bitmap: Bitmap = wallpaper_view_img.drawable.toBitmap()
@@ -274,7 +286,7 @@ class WallpaperViewFragment : Fragment() {
             override fun doInBackground(vararg params: Boolean?): String {
                 val wallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
                 wallpaperManager.setBitmap(bitmap)
-                return "Wallpaper Set"
+                return "Wallpaper Setted"
             }
 
         }
@@ -283,21 +295,21 @@ class WallpaperViewFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         if (image != null) {
-            Glide.with(requireContext()).load(image).centerCrop().listener(
-                object : RequestListener<Drawable> {
+            Glide.with(requireContext()).asBitmap().load(image).centerCrop().listener(
+                object : RequestListener<Bitmap> {
                     override fun onLoadFailed(
                         e: GlideException?,
                         model: Any?,
-                        target: Target<Drawable>?,
+                        target: Target<Bitmap>?,
                         isFirstResource: Boolean
                     ): Boolean {
                         return false
                     }
 
                     override fun onResourceReady(
-                        resource: Drawable?,
+                        resource: Bitmap?,
                         model: Any?,
-                        target: Target<Drawable>?,
+                        target: Target<Bitmap>?,
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {

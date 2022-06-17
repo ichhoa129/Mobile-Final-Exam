@@ -20,13 +20,13 @@ class WallpapersViewModel() : ViewModel() {
     private var page = 1
     private lateinit var db : WallpaperDatabase
 
-    private val wallpapersList: MutableLiveData<List<WallpapersModel>> by lazy {
-        MutableLiveData<List<WallpapersModel>>().also {
+    private val wallpapersList: MutableLiveData<List<Wallpaper>> by lazy {
+        MutableLiveData<List<Wallpaper>>().also {
             loadWallpapersData()
         }
     }
 
-    fun getWallpapersList(): LiveData<List<WallpapersModel>> {
+    fun getWallpapersList(): LiveData<List<Wallpaper>> {
         return wallpapersList
     }
 
@@ -41,37 +41,58 @@ class WallpapersViewModel() : ViewModel() {
                     return
                 }
 
-                if(wallpapersList.value == null) {
-                    wallpapersList.value = response.body()!!.wallpapersList
-                    wallpapersList.value!!.forEach {
-                        Log.d("DEBUG1", it._id.toString())
-                        Thread {
-                            if(!wallpaperDao.isRowIsExist(it._id)) {
-                                val newWallpaper = Wallpaper(
-                                    it._id,
-                                    getByteArrayImage(it.data.large),
-                                    getByteArrayImage(it.data.small)
-                                )
-                                wallpaperDao.insertAll(newWallpaper)
-                            }
-                        }.start()
-                    }
-                }
-                else {
-                    response.body()!!.wallpapersList.forEach {
-                        Log.d("DEBUG1", it._id.toString())
-                        wallpapersList.value = wallpapersList.value!!.plus(it)
-                        Thread {
-                            if(!wallpaperDao.isRowIsExist(it._id)) {
-                                val newWallpaper = Wallpaper(
-                                    it._id,
-                                    getByteArrayImage(it.data.large),
-                                    getByteArrayImage(it.data.small)
-                                )
-                                wallpaperDao.insertAll(newWallpaper)
-                            }
-                        }.start()
-                    }
+//                if(wallpapersList.value == null) {
+//                    wallpapersList.value = response.body()!!.wallpapersList
+//                    wallpapersList.value!!.forEach {
+//                        Log.d("DEBUG1", it._id.toString())
+//                        Thread {
+//                            if(!wallpaperDao.isRowIsExist(it._id)) {
+//                                val newWallpaper = Wallpaper(
+//                                    it._id,
+//                                    getByteArrayImage(it.data.large),
+//                                    getByteArrayImage(it.data.small)
+//                                )
+//                                wallpaperDao.insertAll(newWallpaper)
+//                            }
+//                        }.start()
+//                    }
+//                }
+//                else {
+//                    response.body()!!.wallpapersList.forEach {
+//                        Log.d("DEBUG1", it._id.toString())
+//                        wallpapersList.value = wallpapersList.value!!.plus(it)
+//                        Thread {
+//                            if(!wallpaperDao.isRowIsExist(it._id)) {
+//                                val newWallpaper = Wallpaper(
+//                                    it._id,
+//                                    getByteArrayImage(it.data.large),
+//                                    getByteArrayImage(it.data.small)
+//                                )
+//                                wallpaperDao.insertAll(newWallpaper)
+//                            }
+//                        }.start()
+//                    }
+//                }
+
+                response.body()!!.wallpapersList.forEach {
+                    Log.d("DEBUG1", it._id.toString())
+
+                    Thread {
+                        val newWallpaper = Wallpaper(
+                            it._id,
+                            getByteArrayImage(it.data.large),
+                            getByteArrayImage(it.data.small)
+                        )
+                        if(wallpapersList.value == null) {
+                            wallpapersList.postValue(listOf<Wallpaper>().plus(newWallpaper))
+                        }
+                        else {
+                            wallpapersList.postValue(wallpapersList.value!!.plus(newWallpaper))
+                        }
+                        if(!wallpaperDao.isRowIsExist(it._id)) {
+                            wallpaperDao.insertAll(newWallpaper)
+                        }
+                    }.start()
                 }
 
             }
