@@ -2,6 +2,7 @@ package com.developerdepository.wallpaper
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,12 +18,11 @@ import com.developerdepository.wallpaper.Common.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_wallpapers_list.*
 
-class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
+class WallpapersListFragment : Fragment(), (Wallpaper) -> Unit {
 
-    private val firebaseRepository = FirebaseRepository()
     private var navController: NavController? = null
 
-    private var wallpapersList: List<WallpapersModel> = ArrayList()
+    private var wallpapersList: List<Wallpaper> = ArrayList()
     private val wallpapersListAdapter: WallpapersListAdapter =
         WallpapersListAdapter(wallpapersList, this)
 
@@ -94,12 +94,14 @@ class WallpapersListFragment : Fragment(), (WallpapersModel) -> Unit {
         })
     }
 
-    override fun invoke(wallpaper: WallpapersModel) {
+    override fun invoke(wallpaper: Wallpaper) {
         //Clicked on wallpaper item in the list
+        Log.d("DEBUG7", wallpaper.large.toString())
         val action =
             WallpapersListFragmentDirections.actionWallpapersListFragmentToWallpaperViewFragment(
-                wallpaper.data.large
+                Base64.encodeToString(wallpaper.large, Base64.DEFAULT)
             )
         navController!!.navigate(action)
     }
+
 }
