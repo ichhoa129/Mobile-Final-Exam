@@ -99,7 +99,8 @@ class WallpapersListFragment : Fragment(), (Wallpaper) -> Unit {
         Log.d("DEBUG7", wallpaper.large.toString())
         val action =
             WallpapersListFragmentDirections.actionWallpapersListFragmentToWallpaperViewFragment(
-                Base64.encodeToString(wallpaper.large, Base64.DEFAULT)
+//                Base64.encodeToString(wallpaper.large, Base64.DEFAULT)
+                wallpaper.id
             )
         navController!!.navigate(action)
     }

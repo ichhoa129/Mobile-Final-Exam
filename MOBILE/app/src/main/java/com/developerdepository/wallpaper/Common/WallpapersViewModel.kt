@@ -80,6 +80,7 @@ class WallpapersViewModel() : ViewModel() {
                     Thread {
                         val newWallpaper = Wallpaper(
                             it._id,
+                            it.data.large,
                             getByteArrayImage(it.data.large),
                             getByteArrayImage(it.data.small)
                         )

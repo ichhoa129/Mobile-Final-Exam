@@ -13,6 +13,9 @@ interface WallpaperDao {
     @Insert
     fun insertAll(vararg wallpaper: Wallpaper)
 
+    @Query("SELECT * FROM Wallpaper WHERE id=:id")
+    fun findById(id:String): Wallpaper
+
     @Delete
     fun delete(item: Wallpaper)
 
