@@ -6,13 +6,13 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.app.WallpaperManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,18 +26,27 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.Target
-import com.squareup.picasso.Picasso
+import com.developerdepository.wallpaper.Common.Wallpaper
+import com.developerdepository.wallpaper.Common.WallpaperDatabase
 import kotlinx.android.synthetic.main.fragment_wallpaper_view.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class WallpaperViewFragment : Fragment() {
 
-    private var image: String? = null
+    private lateinit var image: ByteArray
+    private lateinit var id: String
     private var msg: String? = ""
     private var lastMsg = ""
+    private lateinit var db: WallpaperDatabase
+    private lateinit var wallpaperItem: Wallpaper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +58,9 @@ class WallpaperViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        image = WallpaperViewFragmentArgs.fromBundle(requireArguments()).wallpaperImage
+        db = WallpaperDatabase.getInstance(requireActivity().application)!!
+//        image = Base64.decode(WallpaperViewFragmentArgs.fromBundle(requireArguments()).wallpaperImage, Base64.DEFAULT)
+        id = WallpaperViewFragmentArgs.fromBundle(requireArguments()).wallpaperImage
 
         val builder: StrictMode.VmPolicy.Builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
@@ -64,11 +74,8 @@ class WallpaperViewFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 askPermissions()
             } else {
-                downloadImage(image.toString())
+                downloadImage(wallpaperItem.urlLarge)
             }
-        }
-        share_wallpaper_btn.setOnClickListener {
-            shareImageFromURI(image)
         }
     }
 
@@ -114,7 +121,7 @@ class WallpaperViewFragment : Fragment() {
 
             }
         } else {
-            downloadImage(image.toString())
+            downloadImage(wallpaperItem.urlLarge)
         }
     }
 
@@ -129,7 +136,7 @@ class WallpaperViewFragment : Fragment() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay!
                     // Download the Image
-                    downloadImage(image.toString())
+                    downloadImage(wallpaperItem.urlLarge)
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -212,24 +219,6 @@ class WallpaperViewFragment : Fragment() {
     }
 
 
-    //Share Wallpaper
-    fun shareImageFromURI(url: String?) {
-        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_STREAM, getBitmapFromView(bitmap))
-                startActivity(Intent.createChooser(intent, "Share Image"))
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Toast.makeText(activity, "Preparing to share..", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {}
-        })
-    }
-
     fun getBitmapFromView(bmp: Bitmap?): Uri? {
         var bmpUri: Uri? = null
         try {
@@ -257,7 +246,7 @@ class WallpaperViewFragment : Fragment() {
                 null
             )
         )
-        set_wallpaper_text.text = "Wallpaper Set"
+        set_wallpaper_text.text = "Wallpaper Setted"
         set_wallpaper_text.setTextColor(resources.getColor(R.color.setWallpaperBtnText2, null))
 
         val bitmap: Bitmap = wallpaper_view_img.drawable.toBitmap()
@@ -274,7 +263,7 @@ class WallpaperViewFragment : Fragment() {
             override fun doInBackground(vararg params: Boolean?): String {
                 val wallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
                 wallpaperManager.setBitmap(bitmap)
-                return "Wallpaper Set"
+                return "Wallpaper Setted"
             }
 
         }
@@ -282,35 +271,44 @@ class WallpaperViewFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (image != null) {
-            Glide.with(requireContext()).load(image).centerCrop().listener(
-                object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
+        if (id != null) {
+            val wallpaperDao = db!!.wallpaperDao()
+            Thread {
+                wallpaperItem = wallpaperDao.findById(id)
+                requireActivity().runOnUiThread(Runnable {
+                    Glide.with(requireContext()).asBitmap().load(wallpaperItem.large).centerCrop().listener(
+                        object : RequestListener<Bitmap> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Bitmap>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        set_wallpaper_btn_container.visibility = View.VISIBLE
-                        back_btn_container.visibility = View.VISIBLE
-                        download_wallpaper_btn_container.visibility = View.VISIBLE
-                        share_wallpaper_btn_container.visibility = View.VISIBLE
-                        wallpaper_view_progress.hide()
-                        return false
-                    }
+                            override fun onResourceReady(
+                                resource: Bitmap?,
+                                model: Any?,
+                                target: Target<Bitmap>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                set_wallpaper_btn_container.visibility = View.VISIBLE
+                                back_btn_container.visibility = View.VISIBLE
+                                download_wallpaper_btn_container.visibility = View.VISIBLE
+                                share_wallpaper_btn_container.visibility = View.VISIBLE
+                                wallpaper_view_progress.hide()
+                                return false
+                            }
 
-                }
-            ).into(wallpaper_view_img)
+                        }
+                    ).into(
+                        BitmapImageViewTarget(wallpaper_view_img)
+                    )
+                })
+
+            }.start()
         }
     }
 

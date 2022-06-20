@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Wallpaper(
     @PrimaryKey val id: String,
+    @ColumnInfo val urlLarge: String,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)  val large: ByteArray,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)  val small: ByteArray,
 )

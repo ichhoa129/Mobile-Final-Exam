@@ -1,5 +1,6 @@
 package com.developerdepository.wallpaper.Common
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -14,28 +15,28 @@ import com.developerdepository.wallpaper.R
 import kotlinx.android.synthetic.main.list_single_wallpaper_item.view.*
 
 public class WallpapersListAdapter(
-    var wallpapersList: List<WallpapersModel>,
-    val clickListener: (WallpapersModel) -> Unit
+    var wallpapersList: List<Wallpaper>,
+    val clickListener: (Wallpaper) -> Unit
 ) : RecyclerView.Adapter<WallpapersListAdapter.WallpapersViewHolder>() {
 
     class WallpapersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(wallpapers: WallpapersModel, clickListener: (WallpapersModel) -> Unit) {
+        fun bind(wallpapers: Wallpaper, clickListener: (Wallpaper) -> Unit) {
             //Load Image
-            Glide.with(itemView.context).load(wallpapers.data.small).centerCrop().listener(
-                object : RequestListener<Drawable> {
+            Glide.with(itemView.context).asBitmap().load(wallpapers.small).centerCrop().listener(
+                object : RequestListener<Bitmap> {
                     override fun onLoadFailed(
                         e: GlideException?,
                         model: Any?,
-                        target: Target<Drawable>?,
+                        target: Target<Bitmap>?,
                         isFirstResource: Boolean
                     ): Boolean {
                         return false
                     }
 
                     override fun onResourceReady(
-                        resource: Drawable?,
+                        resource: Bitmap?,
                         model: Any?,
-                        target: Target<Drawable>?,
+                        target: Target<Bitmap>?,
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
