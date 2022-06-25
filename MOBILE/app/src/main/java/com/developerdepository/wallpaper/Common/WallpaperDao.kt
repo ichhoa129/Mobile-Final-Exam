@@ -10,6 +10,9 @@ interface WallpaperDao {
     @Query("SELECT * FROM Wallpaper")
     fun getAll(): List<Wallpaper>
 
+    @Query("SELECT * FROM Wallpaper LIMIT :amount")
+    fun getWallpapers(amount: Int) : List<Wallpaper>
+
     @Insert
     fun insertAll(vararg wallpaper: Wallpaper)
 
