@@ -9,7 +9,7 @@ object API {
         get() {
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
-                    .baseUrl("https://mobile..com")
+                    .baseUrl("https://mobile.ichhoa.com")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
             }
