@@ -71,8 +71,8 @@ class WallpapersCategoryFragment : Fragment() {
         menu.setOnClickListener {
             powerMenu = PowerMenu.Builder(requireContext())
                 .addItem(PowerMenuItem("Privacy Policy", false))
-                .addItem(PowerMenuItem("Rate WalLipi", false))
-                .addItem(PowerMenuItem("Share WalLipi", false))
+                .addItem(PowerMenuItem("Rate WallPaper", false))
+                .addItem(PowerMenuItem("Share WallPaper", false))
                 .addItem(PowerMenuItem("App Info", false))
                 .setCircularEffect(CircularEffect.BODY)
                 .setMenuRadius(8f)
@@ -281,7 +281,7 @@ class WallpapersCategoryFragment : Fragment() {
             if (powerMenu!!.selectedPosition == 0) {
                 powerMenu!!.dismiss()
                 val privacyPolicyUrl =
-                    "https://developerdepository.wixsite.com/wallipi-policies"
+                    "https://pbl.ichhoa.com/"
                 val browserIntent =
                     Intent(Intent.ACTION_VIEW, Uri.parse(privacyPolicyUrl))
                 startActivity(browserIntent)

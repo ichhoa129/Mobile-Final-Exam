@@ -98,7 +98,7 @@ class WallpaperViewFragment : Fragment() {
                 // sees the explanation, try again to request the permission.
                 AlertDialog.Builder(context as Activity)
                     .setTitle("Permission Required")
-                    .setMessage("Permission required to save photos from WalLipi App.")
+                    .setMessage("Permission required to save photos from Wallpaper App.")
                     .setPositiveButton("Accept") { dialog, id ->
                         ActivityCompat.requestPermissions(
                             context as Activity,

@@ -1,6 +1,6 @@
 # Wallpaper - Application show wallpapers and set to phone
 
-[![Flutter](https://img.shields.io/badge/Made%20with-Kotlin-blue.svg)](https://flutter.dev/) ![NodeJs](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+[![Flutter](https://img.shields.io/badge/Made%20with-Kotlin-orange.svg)](https://kotlinlang.org/) ![NodeJs](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 
 ## Features
 
@@ -14,77 +14,6 @@
 - Kotlin
 - Firebase
 - NodeJs
-
-## Environment
-
-<details>
-    <summary>Click to expand</summary>
-    <br>
-
-- Install nodejs
-- Install npm or yarn
-- Make sure you are in /BACKEND
-- Run:
-
-```bash
-yarn
-```
-
-- Or with npm
-
-```bash
-npm i
-```
-- Configure your own .env and mongodb.config.json file follow the example ones
-
-- Then run the following to bootstrap the Server
-```bash
-yarn dev
-```
-
-- Or with npm
-
-```bash
-npm run dev
-```
-
-</details>
-
-## Setup and run
-
-<details>
-    <summary>Click to expand</summary>
-    <br>
-
-- Download APK
-  - [APK - arm64](https://drive.google.com/file/d/1r5BxLCoTn2JqQuEjAtoUxmZeSHIByEKa/view?usp=sharing)
-- Setup and run
-  - Flutter
-    - Install [Flutter](https://flutter.dev/docs/get-started/install).
-    - Using **`stable`** channel:
-      ```bash
-      ❯ flutter channel stable
-      ❯ flutter upgrade
-      ```
-    - Flutter doctor:
-      ```bash
-      ❯ flutter doctor
-      ```
-    - Install all the packages by:
-      ```bash
-      ❯ flutter pub get
-      ```
-    - Create .env file `assets/.env` has following structure:
-      ```bash
-      BASE_URL=https://api.smartfood.cooking/api
-      ```
-    - Run app on real devices or emulator by:
-      ```bash
-      ❯ flutter run
-      ```
-      or debug mode in VSCode or some IDEs
-
-</details>
 
 ## Screenshots
 
